@@ -66,12 +66,13 @@ def get_row_for_student(student):
 
 @app.route("/api/export/", methods=["POST", "GET"])
 def export_data():
-
+    students = db.all()
+    if len(students) < 1:
+        return redirect(url_for("home"))
+    
     # workbook
     wb = Workbook()
     ws = wb.active
-
-    students = db.all()
     
     # heading
     heads = get_heading_row(students) # [(name, 1), (criteria1, 4), (criteria2, 4), ...]
@@ -167,7 +168,9 @@ def get_criteria():
 def evaluation_list():
     data = db.all()
 
-    table_head = get_heading_row(students=data)
+    table_head = None
+    if len(data) > 1:
+        table_head = get_heading_row(students=data)
 
     table_rows = []
     for student in data:
