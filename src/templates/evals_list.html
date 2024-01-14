@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluations</title>
+
+    <style>
+        body {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            padding: 50px 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 3px 5px;
+        }
+        table {
+            border-collapse: collapse;
+        }
+    </style>
+
+</head>
+<body>
+    <main>
+        <h2>Evaluations</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    {% for h in table_head %}
+                        <th colspan="{{ h[1]+1 }}"> {{ h[0] }} </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in table_rows %}
+                    <tr>
+                        {% for d in student %}
+                            <td> {{ d }} </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </main>
+</body>
+</html>

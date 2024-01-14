@@ -1,0 +1,14 @@
+{
+    "criteria": {
+        "1705154363": {
+            "id": 1705154363,
+            "name": "Analyse",
+            "data-type": "quanti"
+        },
+        "1705154399": {
+            "id": 1705154399,
+            "name": "Assiduit\u00e9e",
+            "data-type": "quali"
+        }
+    }
+}
