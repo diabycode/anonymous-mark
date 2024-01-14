@@ -25,6 +25,7 @@
 <body>
     <main>
         <h2>Evaluations</h2>
+        {% if table_head %}
         <table border="1">
             <thead>
                 <tr>
@@ -44,6 +45,10 @@
             </tbody>
 
         </table>
+        {% else %}
+            <p>Aucune données</p>
+        {% endif %}
+
     </main>
 </body>
 </html>

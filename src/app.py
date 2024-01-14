@@ -167,7 +167,9 @@ def get_criteria():
 def evaluation_list():
     data = db.all()
 
-    table_head = get_heading_row(students=data)
+    table_head = None
+    if len(data) > 1:
+        table_head = get_heading_row(students=data)
 
     table_rows = []
     for student in data:
