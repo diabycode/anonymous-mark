@@ -60,12 +60,80 @@
     </main>
 
     <script>
+
+        function saveStudent(data) {
+
+            const rp = fetch("/api/add/student/", {
+                method: "POST",
+                headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+                body: JSON.stringify(
+                    {
+                        name: data.get("name")
+                    }
+                )
+            })
+            rp
+                .then((r) => r.json())
+                .then((result) => {
+                    if (result.status === 0) {
+                        alert(`'${result.object.name}' ajouté !`)
+                    }
+                })
+                .catch(() => {
+                    alert("!! Une erreur s'est produite")
+                })
+        
+        }
+
+        function saveCriteria(data) {
+            
+            const rp = fetch("/api/add/criteria/", {
+                method: "POST",
+                headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+                body: JSON.stringify(
+                    {
+                        name: data.get("name"),
+                        datatype: data.get("data-type")
+                    }
+                )
+            })
+            rp
+                .then((r) => r.json())
+                .then((result) => {
+                    if (result.status === 0) {
+                        alert(`Critère '${result.object.name}' ajouté !`)
+                    }
+                })
+                .catch(() => {
+                    alert("!! Une erreur s'est produite")
+                })
+        }
+
+        // clear db
         document.querySelector(".clear-btn").addEventListener("click", (e) => {
             e.preventDefault()
             if (window.confirm("Voulez-vous vraiment supprimer la base de donnée ?")) {
                 window.location = "/api/clear/"
                 alert("Base de données éffacé !")
             }
+        })
+
+        // save student 
+        document.querySelector(".student-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            
+            const data = new FormData(e.target);
+            e.target.querySelector("input[type=text]").value = ""
+            saveStudent(data)
+        })
+
+        // save criteria
+        document.querySelector(".criteria-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            
+            const data = new FormData(e.target);
+            e.target.querySelector("input[type=text]").value = ""
+            saveCriteria(data)
         })
     </script>
 </body>

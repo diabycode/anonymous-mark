@@ -97,10 +97,14 @@ def export_data():
 def add_student():
     if not request.method == "POST":
         return redirect(url_for("home"))
-    form = request.form
+    
+    name = request.form.get("name")
+    if name is None:
+        name = (request.json).get("name")
+
     student = {
         "id": int(time.time()),
-        "name": form.get("name"),
+        "name": name,
         "evaluations": []
     }
     student["id"] = db.upsert(table.Document(student, doc_id=student["id"]))
@@ -114,11 +118,16 @@ def add_criteria():
     if not request.method == "POST":
         return redirect(url_for("home"))
     
-    form = request.form
+    name = request.form.get("name")
+    datatype = request.form.get("datatype")
+    if name is None:
+        name = (request.json).get("name")
+        datatype = (request.json).get("datatype")
+
     criteria = {
         "id": int(time.time()),
-        "name": form.get("name"),
-        "data-type": form.get("data-type")
+        "name": name,
+        "data-type": datatype
     }
     criteria["id"] = db_criteria.upsert(table.Document(criteria, doc_id=criteria["id"]))
 
