@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Mark</title>
+
+    <style>
+        :root {
+            font-size: 15px;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            padding: 50px 0;
+            text-align: center;
+        }
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1rem;
+        }
+        h2 {
+            font-size: 2rem;
+        }
+        h3 {
+            font-weight: 400;
+            
+        }
+
+    </style>
+</head>
+<body>
+    <main>
+        <h2>Evaluez vos camarades</h2>
+        <p>
+            <span>Votre base de données : </span>
+            <a href="/evaluations-list/">Afficher</a>
+            <a href="/api/export/" download="evaluations.xlsx">Exporter</a>
+            <a href="/api/clear/" class="clear-btn" style="color: red;">Effacer</a>
+        </p>
+        <div class="add-form student-form">
+            <h3>Ajoutez un étudiant</h3>
+            <form method="POST" action="/api/add/student/">
+                <input type="text" name="name" placeholder="Donnez un nom">
+                <input type="submit" value="Envoyer">
+            </form>
+        </div>
+        <div class="add-form criteria-form">
+            <h3>Ajoutez un critère d'évaluation</h3>
+            <form method="POST" action="/api/add/criteria/">
+                <input type="text" name="name" placeholder="Donnez un nom">
+                <select name="data-type" id="data-type">
+                    <option value="quanti" selected>quantitative</option>
+                    <option value="quali">qualitative</option>
+                </select>
+    
+                <input type="submit" value="Envoyer">
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.querySelector(".clear-btn").addEventListener("click", (e) => {
+            e.preventDefault()
+            if (window.confirm("Voulez-vous vraiment supprimer la base de donnée ?")) {
+                window.location = "/api/clear/"
+                alert("Base de données éffacé !")
+            }
+        })
+    </script>
+</body>
+</html>
