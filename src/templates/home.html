@@ -38,6 +38,8 @@
             <a href="/api/export/" download="evaluations.xlsx">Exporter</a>
             <a href="/api/clear/" class="clear-btn" style="color: red;">Effacer</a>
         </p>
+
+        <!-- student form  -->
         <div class="add-form student-form">
             <h3>Ajoutez un étudiant</h3>
             <form method="POST" action="/api/add/student/">
@@ -45,6 +47,8 @@
                 <input type="submit" value="Envoyer">
             </form>
         </div>
+
+        <!-- add criteria form -->
         <div class="add-form criteria-form">
             <h3>Ajoutez un critère d'évaluation</h3>
             <form method="POST" action="/api/add/criteria/">
@@ -62,7 +66,7 @@
     <script>
 
         function saveStudent(data) {
-
+            // call api endpoint (add student)
             const rp = fetch("/api/add/student/", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
@@ -87,6 +91,7 @@
 
         function saveCriteria(data) {
             
+            // call api endpoint (add criteria) 
             const rp = fetch("/api/add/criteria/", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
@@ -109,12 +114,14 @@
                 })
         }
 
-        // clear db
+        // clear database
         document.querySelector(".clear-btn").addEventListener("click", (e) => {
             e.preventDefault()
+
+            // confirm deletion
             if (window.confirm("Voulez-vous vraiment supprimer la base de donnée ?")) {
-                window.location = "/api/clear/"
-                alert("Base de données éffacé !")
+                window.location = "/api/clear/" // delete all in db
+                alert("Base de données éffacé !") // show success message
             }
         })
 
@@ -122,18 +129,18 @@
         document.querySelector(".student-form").addEventListener("submit", (e) => {
             e.preventDefault();
             
-            const data = new FormData(e.target);
-            e.target.querySelector("input[type=text]").value = ""
-            saveStudent(data)
+            const data = new FormData(e.target); // get form data
+            e.target.querySelector("input[type=text]").value = "" // clear form
+            saveStudent(data) // save student
         })
 
         // save criteria
         document.querySelector(".criteria-form").addEventListener("submit", (e) => {
             e.preventDefault();
             
-            const data = new FormData(e.target);
-            e.target.querySelector("input[type=text]").value = ""
-            saveCriteria(data)
+            const data = new FormData(e.target); // get form data
+            e.target.querySelector("input[type=text]").value = "" // clear form data
+            saveCriteria(data) // save criteria
         })
     </script>
 </body>

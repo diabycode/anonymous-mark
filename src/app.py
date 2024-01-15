@@ -2,15 +2,17 @@ import time
 import json
 from pathlib import Path
 
-from flask import Flask, request, redirect, url_for, render_template, send_file
-from tinydb import TinyDB, Query, where, table
-from openpyxl import Workbook
+from flask import Flask, request, redirect, url_for, render_template, send_file # python web framework
+from tinydb import TinyDB, table # json database management
+from openpyxl import Workbook # for Excel exportation
 
 
-app = Flask(__name__)
+app = Flask(__name__) # flask app initialization
 
-db = TinyDB("db.json", indent=4).table("evaluations")
-db_criteria = TinyDB(Path(__file__).parent/"_db.json", indent=4).table("criteria")
+db = TinyDB("db.json", indent=4).table("evaluations") # database initialization for students and her marks 
+db_criteria = TinyDB(Path(__file__).parent/"_db.json", indent=4).table("criteria")  # db for criteria
+
+# api request status
 status = {
     "success": {
         "status": 0,
@@ -22,12 +24,15 @@ status = {
     }
 }
 
+# utilities functions
 
 def evaluate(student, criteria, value) -> dict:
 
-    evaluations = student.get("evaluations")
+    evaluations = student.get("evaluations") # evaluations list 
     
-    evaluation_object = None
+    evaluation_object = None 
+    
+    # get criteria
     for i in range(len(evaluations)) :
         if evaluations[i]["criteria"] == criteria["name"]:
             evaluation_object = evaluations.pop(i)
@@ -36,6 +41,7 @@ def evaluate(student, criteria, value) -> dict:
     if evaluation_object is not None:
         evaluation_object["values"].append(value)
     else:
+        # add new criteria 
         evaluation_object = {
             "criteria": criteria["name"],
             "values": [value]
@@ -46,7 +52,8 @@ def evaluate(student, criteria, value) -> dict:
     return student
 
 def get_heading_row(students):
-    
+    # (Nom, 2)
+
     heading = [("Nom", 0)]
     student = students[0]
 
@@ -59,10 +66,14 @@ def get_heading_row(students):
 
 def get_row_for_student(student):
 
+    # [nom, 5, 8, 3, 1]
     row = [student["name"]]
     for e in student["evaluations"]:
         row.extend(e["values"])    
     return row
+
+
+# app views or endpoints
 
 @app.route("/api/export/", methods=["POST", "GET"])
 def export_data():
@@ -70,12 +81,12 @@ def export_data():
     if len(students) < 1:
         return redirect(url_for("home"))
     
-    # workbook
+    # workbook (excel file)
     wb = Workbook()
-    ws = wb.active
+    ws = wb.active # excel sheet
     
     # heading
-    heads = get_heading_row(students) # [(name, 1), (criteria1, 4), (criteria2, 4), ...]
+    heads = get_heading_row(students) # [(name, 0), (criteria1, 4), (criteria2, 4), ...]
     cell_index = 1
     for h in heads:
         ws.cell(row=1, column=cell_index).value = h[0]
@@ -86,16 +97,16 @@ def export_data():
     for i in range(1, len(students)+1):
         row = get_row_for_student(students[i-1])
 
-        for j in range(len(row)):
+        for j in range(len(row)):  # [nom, 5, 8, 3, 1]
             ws.cell(row=i+1, column=j+1).value = row[j]
 
     filename = Path(__file__).parent / "evaluations.xlsx"
     wb.save(filename=filename)
-    return send_file(filename, as_attachment=True)
+    return send_file(filename, as_attachment=True) # return excel file 
 
 @app.route("/api/add/student/", methods=["GET", "POST"])
 def add_student():
-    if not request.method == "POST":
+    if not request.method == "POST": # request method
         return redirect(url_for("home"))
     
     name = request.form.get("name")
@@ -115,15 +126,19 @@ def add_student():
 
 @app.route("/api/add/criteria/", methods=["GET", "POST"])
 def add_criteria():
-    if not request.method == "POST":
+    if not request.method == "POST": # only POST request authorized
         return redirect(url_for("home"))
     
+    # for forms
     name = request.form.get("name")
     datatype = request.form.get("datatype")
+    
     if name is None:
+        # for json data
         name = (request.json).get("name")
         datatype = (request.json).get("datatype")
 
+    # criteria object
     criteria = {
         "id": int(time.time()),
         "name": name,
@@ -133,7 +148,7 @@ def add_criteria():
 
     rq_status = status["success"]
     rq_status["object"] = criteria
-    return rq_status
+    return rq_status # return request status
 
 @app.route("/api/clear/", methods=["GET", "POST"])
 def clear_db():
@@ -151,15 +166,17 @@ def evaluate_student():
             'value': int
         }
     """
+
+    # get data and deserialize them
     data = json.loads(request.json)
 
-    student = db.get(doc_id=data.get("student_id"))
-    if student:
+    student = db.get(doc_id=data.get("student_id")) # get student to evaluate
+    if student: # student exist verification
         criteria = db_criteria.get(doc_id=data.get("criteria_id"))
         value = data.get("value")
         
         student = evaluate(student, criteria, value) # add evaluation value
-        db.update(student, doc_ids=[data.get("student_id")])
+        db.update(student, doc_ids=[data.get("student_id")]) # update student en database
 
     rq_status = status["success"]
     rq_status["object"] = student
@@ -175,7 +192,7 @@ def get_criteria():
 
 @app.route("/evaluations-list/")
 def evaluation_list():
-    data = db.all()
+    data = db.all() # get all data
 
     table_head = None
     if len(data) > 1:
